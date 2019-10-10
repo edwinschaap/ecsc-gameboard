@@ -1,4 +1,6 @@
 <?php
+    date_default_timezone_set(getenv('TIMEZONE') ?: 'Europe/Athens');
+    
     define("DEBUG", file_exists("../.debug"));
     define("MYSQL_SERVER", "database");
     define("MYSQL_USERNAME", getenv('MYSQL_USER'));
