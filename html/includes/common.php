@@ -13,7 +13,7 @@
     define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
-    define("FLAG_REGEX", "/ECSC\{.+\}/");
+    define("FLAG_REGEX", "/ECSC\{[^\}]+\}?/i");
     define("FLAG_REDACTED", "ECSC{...}");
     define("GD_INSTALLED", extension_loaded("gd"));     // Note: had problems on Ubuntu 18.04 when PHP has been updated to 7.2, while the 7.0 had still been used (hence, problems with GD arised) - thus, had to do the "apt remove php7.0" to get GD up and running
     define("CAPTCHA_ENABLED", true && GD_INSTALLED);
@@ -101,11 +101,15 @@
         return $str;
     }
 
-    function generateValuesHtml($cash, $awareness) {
+    function generateValuesHtml($cash, $awareness, $dynamic=null) {
         if (is_numeric($cash))
             $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => number_format($cash), "appearance" => ($cash > 0 ? "badge-success" : ($cash < 0 ? "badge-danger" : "badge-light"))));
         else
             $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => $cash, "appearance" => "badge-light"));
+
+        if (!is_null($dynamic) && ($dynamic != $cash))
+            $result = str_replace('</span>', '/' . $dynamic . '</span>', $result);
+
         if (is_numeric($awareness))
             $result .= format('<span class="badge {appearance} border mr-2">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => number_format($awareness), "appearance" => ($awareness > 0 ? "badge-success" : ($awareness < 0 ? "badge-danger" : "badge-light"))));
         else

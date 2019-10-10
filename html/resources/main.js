@@ -260,7 +260,10 @@ $(document).ready(function() {
         },
         fnDrawCallback: function( oSettings ) {
             $(".heartbeat:contains(',')").sparkline("html", { type: "line", tooltipClassname: "sparkline-tooltip", disableTooltips: true, disableInteraction: true, spotRadius: 0 });
-        }
+        },
+        columnDefs: [
+            { orderSequence: [ "desc", "asc" ], targets: [ 3, 4, 5 ] },
+        ]
     });
 
     $('#logs_table').removeClass("hidden");
@@ -913,9 +916,11 @@ function pullMessages(initial) {
             if (($("#notification_count").length > 0) && ($("#notification_count").text() != result["notifications"])) {
                 $("#notification_count").text(result["notifications"]);
                 if ($(".active").html().indexOf("notification_") >= 0) {
-                    setInterval(function() {
-                        if (!(($(document.activeElement).prop("id") == "chat_message") && ($(document.activeElement).val())))
+                    var interval = setInterval(function() {
+                        if (!(($(document.activeElement).prop("id") == "chat_message") && ($(document.activeElement).val()))) {
+                            clearInterval(interval);
                             reload();
+                        }
                     }, 100);
                 }
             }
